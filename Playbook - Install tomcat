@@ -68,6 +68,8 @@ curl http://<IPorlocalhost>:8080
  
  ### THE EXAMPLE BELOW THE VARIABLES ARE INSIDE THE PLAYBOOK, THE SECOND I CREATE A TOMCAT_VARS
  
+ ansible-playbook -i hosts tomcat.yaml --extra-vars "ansible_sudo_pass=<password>"
+
  #1
 ---
 - name: install tomcat
