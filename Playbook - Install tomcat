@@ -1,1 +1,18 @@
-asdsd
+
+Installing Tomcat on CentOS 7
+
+
+sudo yum install java   (good to check if it is already installed)
+
+#you can skip this step and go directly to sudo yum install tomcat, but if you need specific version follow below
+wget http://.../apache-tomcat-8.5.35.tar.gz -P /opt (https://tomcat.apache.org/)
+tar -xvzf /opt/apache-tomcat-8.5.35.tar.gz
+#
+sudo yum install tomcat 
+sudo yum install tomcat-webapps tomcat-admin-webapps tomcat-docs-webapp tomcat-javadoc
+sudo systemctl start tomcat
+#check the default Tomcat page
+curl http://<IPorlocalhost>:8080
+
+
+
