@@ -33,6 +33,7 @@ systemctl status tomcat
 curl http://<IPorlocalhost>:8080
 
 
+
 ======================= PLAYBOOK ========================
 
 
@@ -59,7 +60,77 @@ curl http://<IPorlocalhost>:8080
       remote_src: yes   #to unpack an archive which already exists on the targe#t###
 
   - name: start Tomcat
-    shell: nohup /usr/local/apache-tomcat-8.5.85.tar.gz/bin/startup.sh  #keep processes running even after exiting the shell
+    shell: nohup /usr/local/apache-tomcat-8.5.85/bin/startup.sh  #keep processes running even after exiting the shell
     
     
+    
+ ======================= PLAYBOOK with VARIABLES ========================
+ 
+ ### THE EXAMPLE BELOW THE VARIABLES ARE INSIDE THE PLAYBOOK, THE SECOND I CREATE A TOMCAT_VARS
+ 
+ #1
+---
+- name: install tomcat
+  hosts: targets
+  become: true  #need root priv
+  vars:
+    - tomcat_url: https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.85/bin/apache-tomcat-8.5.85.tar.gz
+    - tomcat_package: apache-tomcat-8.5.85
 
+  tasks:
+  - name: install java #google - ansible module to install packages
+    ansible.builtin.yum:  #could be only yum
+      name: java
+      state: latest 
+
+  - name: download Tomcat 
+    ansible.builtin.get_url:
+      url: '{{ tomcat_url }}'
+      dest: /usr/local 
+  
+  - name: extract tomcatpackages
+    ansible.builtin.unarchive:
+      src: /usr/local/{{ tomcat_package }}.tar.gz
+      dest: /usr/local/
+      remote_src: yes   #to unpack an archive which already exists on the targe#t###
+
+  - name: start Tomcat
+    shell: nohup /usr/local/{{ tomcat_package }}/bin/startup.sh
+
+    
+ #2
+ the file tomcat_vars it is in the playbook and host files
+ @ansiblecontroller playbooks]$ ls
+hosts  tomcat_vars  tomcat.yaml
+
+ls tomcat_vars
+http://dlcdn.apache.org/tomcat/tomcat-8/v8.5.85/bin/apache-tomcat-8.5.85.tar.gz
+apache-tomcat-8.5.85
+
+
+---
+- name: install tomcat
+  hosts: targets
+  become: true  #need root priv
+  vars_files:
+    -tomcat_vars
+
+  tasks:
+  - name: install java #google - ansible module to install packages
+    ansible.builtin.yum:  #could be only yum
+      name: java
+      state: latest 
+
+  - name: download Tomcat 
+    ansible.builtin.get_url:
+      url: '{{ tomcat_url }}'
+      dest: /usr/local 
+  
+  - name: extract tomcatpackages
+    ansible.builtin.unarchive:
+      src: /usr/local/{{ tomcat_package }}.tar.gz
+      dest: /usr/local/
+      remote_src: yes   #to unpack an archive which already exists on the targe#t###
+
+  - name: start Tomcat
+    shell: nohup /usr/local/{{ tomcat_package }}/bin/startup.sh
