@@ -1,18 +1,65 @@
 
-Installing Tomcat on CentOS 7
+========= Installing Tomcat on CentOS 7 =================
 
 
 sudo yum install java   (good to check if it is already installed)
 
-#you can skip this step and go directly to sudo yum install tomcat, but if you need specific version follow below
-wget http://.../apache-tomcat-8.5.35.tar.gz -P /opt (https://tomcat.apache.org/)
-tar -xvzf /opt/apache-tomcat-8.5.35.tar.gz
-#
-sudo yum install tomcat 
-sudo yum install tomcat-webapps tomcat-admin-webapps tomcat-docs-webapp tomcat-javadoc
-sudo systemctl start tomcat
+wget http://.../apache-tomcat-8.5.35.tar.gz -P /usr/local (https://tomcat.apache.org/)
+
+tar -xvzf /usr/local/apache-tomcat-8.5.35.tar.gz
+
+/usr/local/apache-tomcat-8.5.85.tar.gz/bin/startup.sh
+
+/usr/local/apache-tomcat-8.5.85.tar.gz/bin/startup.sh
+
+systemctl status tomcat
+
 #check the default Tomcat page
 curl http://<IPorlocalhost>:8080
 
 
+========== another way================== 
+
+
+sudo yum install tomcat 
+
+sudo yum install tomcat-webapps tomcat-admin-webapps tomcat-docs-webapp tomcat-javadoc
+
+sudo systemctl start tomcat
+
+systemctl status tomcat
+
+#check the default Tomcat page
+curl http://<IPorlocalhost>:8080
+
+
+======================= PLAYBOOK ========================
+
+
+---
+- name: install tomcat
+  hosts: targets
+  become: true  #need root priv
+
+  tasks:
+  - name: install java #google - ansible module to install packages
+    ansible.builtin.yum:  #could be only yum
+      name: java
+      state: latest 
+
+  - name: download Tomcat 
+    ansible.builtin.get_url:
+      url: https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.85/bin/apache-tomcat-8.5.85.tar.gz
+      dest: /usr/local 
+  
+  - name: extract tomcatpackages
+    ansible.builtin.unarchive:
+      src: /usr/local/apache-tomcat-8.5.85.tar.gz
+      dest: /usr/local/
+      remote_src: yes   #to unpack an archive which already exists on the targe#t###
+
+  - name: start Tomcat
+    shell: nohup /usr/local/apache-tomcat-8.5.85.tar.gz/bin/startup.sh  #keep processes running even after exiting the shell
+    
+    
 
